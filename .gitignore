@@ -1,0 +1,27 @@
+# Backup files created by the plugin
+*.backup.*
+*.merged.*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Zsh temporary files
+*.zwc
+.zcompdump*
+
+# Test directories
+/tmp/test-consolidate/
+test-dir/
