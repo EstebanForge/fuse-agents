@@ -39,11 +39,11 @@ if [[ ! -f "$PLUGIN_FILE" ]]; then
 fi
 
 # Detect current shell and determine directories
-if [[ -n "$ZSH_VERSION" ]] || [[ "$SHELL" == *"zsh"* ]]; then
+if [[ -n "${ZSH_VERSION:-}" ]] || [[ "$SHELL" == *"zsh"* ]]; then
     CURRENT_SHELL="zsh"
     CONFIG_FILE="$HOME/.zshrc"
     SHELL_PLUGINS_DIR="$HOME/.zsh/plugins"
-elif [[ -n "$BASH_VERSION" ]] || [[ "$SHELL" == *"bash"* ]]; then
+elif [[ -n "${BASH_VERSION:-}" ]] || [[ "$SHELL" == *"bash"* ]]; then
     CURRENT_SHELL="bash"
     CONFIG_FILE="$HOME/.bashrc"
     SHELL_PLUGINS_DIR="$HOME/.bash/plugins"

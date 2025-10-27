@@ -6,7 +6,7 @@ A cross-shell plugin (Bash & Zsh) that automatically consolidates AI assistant c
 
 - 🔍 **Auto-detection**: Detects CLAUDE.md and GEMINI.md files when you `cd` into directories
 - 🔄 **Auto-consolidation**: Automatically merges files using merge strategy (no prompts)
-- 🔗 **Intelligent Symlink Management**: Creates CLAUDE.md → AGENTS.md symlinks; GEMINI.md is merged/renamed since it can read AGENTS.md directly
+- 🔗 **Intelligent Symlink Management**: Creates CLAUDE.md → AGENTS.md symlinks; GEMINI.md is merged/renamed since it can read AGENTS.md directly; no GEMINI.md symlink is created if the file doesn't exist
 - 📦 **Smart Merging**: Combines content from multiple AI assistant files
 - 🎯 **Zero Configuration**: Works out of the box, no setup required
 
@@ -51,6 +51,40 @@ source ~/.bashrc
 curl -fsSL https://raw.githubusercontent.com/EstebanForge/consolidate-agents/main/install.sh | bash
 ```
 
+## Updating
+
+To update the plugin to the latest version:
+
+### Option 1: Git Repository Update
+
+```bash
+# Navigate to your plugin directory
+cd ~/.zsh/plugins/consolidate-agents  # or ~/.bash/plugins/consolidate-agents
+
+# Pull latest changes
+git pull
+
+# Re-run the installer (safe for updates)
+./install.sh
+
+# Restart your terminal or source config
+source ~/.zshrc  # or source ~/.bashrc
+```
+
+### Option 2: Fresh Installation
+
+```bash
+# Simply re-run the installer
+curl -fsSL https://raw.githubusercontent.com/EstebanForge/consolidate-agents/main/install.sh | bash
+
+# Restart your terminal
+```
+
+**Note**: The installer is update-safe and will:
+- Overwrite the old plugin files with new versions
+- Preserve your existing shell configuration
+- Not create duplicate sourcing lines in your config files
+
 ## Usage
 
 ### Automatic (Default Behavior)
@@ -92,6 +126,7 @@ consolidate-agents-recursive ~/dev-projects
    - Backs up original files with timestamps
    - Creates symlinks: `CLAUDE.md → AGENTS.md`
    - `GEMINI.md` is renamed to `AGENTS.md` or merged (no symlink) since GEMINI can read AGENTS.md directly
+   - If `GEMINI.md` doesn't exist, no symlink is created for it (GEMINI can read `AGENTS.md` directly)
 
 3. **Merge Strategy**: The merged file structure:
    ```markdown
@@ -123,7 +158,7 @@ project/
 └── GEMINI.md.backup.20251021_143022  # Original backup (if GEMINI.md existed)
 ```
 
-*Note: `GEMINI.md` is not symlinked since GEMINI can read `AGENTS.md` directly.*
+*Note: `GEMINI.md` is not symlinked since GEMINI can read `AGENTS.md` directly. If `GEMINI.md` doesn't exist in the original directory, no symlink will be created.*
 
 ## Configuration
 

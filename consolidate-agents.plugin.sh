@@ -70,6 +70,7 @@ array_join() {
 _handle_ai_file() {
     local ai_file="$1"
     local ai_name="$2"
+    local create_symlink="${3:-true}"
     local agents_file="AGENTS.md"
     
     # Handle existing AI file
@@ -192,9 +193,11 @@ _handle_ai_file() {
         fi
     fi
     
-    # Create symlink
-    ln -s "$agents_file" "$ai_file"
-    log_info "Created $ai_name.md -> AGENTS.md symlink"
+    # Create symlink only if requested and file existed before
+    if [[ "$create_symlink" == "true" ]]; then
+        ln -s "$agents_file" "$ai_file"
+        log_info "Created $ai_name.md -> AGENTS.md symlink"
+    fi
     return 0
 }
 
@@ -223,7 +226,7 @@ _consolidate-agents() {
     
     # Handle CLAUDE.md
     if [[ -f "CLAUDE.md" || -f "AGENTS.md" ]]; then
-        if _handle_ai_file "CLAUDE.md" "CLAUDE"; then
+        if _handle_ai_file "CLAUDE.md" "CLAUDE" "true"; then
             ((processed++))
         fi
     fi
@@ -408,7 +411,8 @@ USAGE:
 DESCRIPTION:
     Automatically consolidates CLAUDE.md and GEMINI.md files into AGENTS.md
     with symlink management and smart merging. GEMINI.md is not symlinked
-    since GEMINI can read AGENTS.md directly.
+    since GEMINI can read AGENTS.md directly. If GEMINI.md doesn't exist,
+    no symlink will be created for it.
 
 EXAMPLES:
     consolidate-agents                 # Process current directory
