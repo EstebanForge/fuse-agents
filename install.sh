@@ -1,7 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Consolidate Agents Plugin Installer
-# Installs the consolidate-agents plugin (Bash & Zsh compatible)
+# Fuse Agents Plugin Installer
+# Installs the fuse-agents plugin (Bash & Zsh compatible)
 
 set -euo pipefail
 
@@ -30,7 +30,7 @@ log_step() {
 
 # Get script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PLUGIN_FILE="$SCRIPT_DIR/consolidate-agents.plugin.sh"
+PLUGIN_FILE="$SCRIPT_DIR/fuse-agents.plugin.sh"
 
 # Check if plugin file exists
 if [[ ! -f "$PLUGIN_FILE" ]]; then
@@ -63,8 +63,8 @@ if [[ ! -d "$SHELL_PLUGINS_DIR" ]]; then
     mkdir -p "$SHELL_PLUGINS_DIR"
 fi
 
-# Create consolidate-agents subdirectory
-PLUGIN_DIR="$SHELL_PLUGINS_DIR/consolidate-agents"
+# Create fuse-agents subdirectory
+PLUGIN_DIR="$SHELL_PLUGINS_DIR/fuse-agents"
 if [[ ! -d "$PLUGIN_DIR" ]]; then
     log_step "Creating plugin directory: $PLUGIN_DIR"
     mkdir -p "$PLUGIN_DIR"
@@ -85,7 +85,7 @@ fi
 
 # Check if plugin is already sourced in shell config
 if [[ -f "$CONFIG_FILE" ]]; then
-    if grep -q "consolidate-agents" "$CONFIG_FILE"; then
+    if grep -q "fuse-agents" "$CONFIG_FILE"; then
         log_warn "Plugin already referenced in $CONFIG_FILE"
     else
         log_step "Adding plugin to $CONFIG_FILE"
@@ -93,9 +93,9 @@ if [[ -f "$CONFIG_FILE" ]]; then
         # Add plugin loading code
         cat >> "$CONFIG_FILE" << EOF
 
-# Load Consolidate Agents plugin
-if [[ -f $SHELL_PLUGINS_DIR/consolidate-agents/consolidate-agents.plugin.sh ]]; then
-    source $SHELL_PLUGINS_DIR/consolidate-agents/consolidate-agents.plugin.sh
+# Load Fuse Agents plugin
+if [[ -f $SHELL_PLUGINS_DIR/fuse-agents/fuse-agents.plugin.sh ]]; then
+    source $SHELL_PLUGINS_DIR/fuse-agents/fuse-agents.plugin.sh
 fi
 EOF
         log_info "Added plugin loading to $CONFIG_FILE"
@@ -103,7 +103,7 @@ EOF
 else
     log_warn "$CONFIG_FILE not found. You'll need to manually add the plugin to your shell configuration."
     echo "Add this line to your shell config:"
-    echo "source $SHELL_PLUGINS_DIR/consolidate-agents/consolidate-agents.plugin.sh"
+    echo "source $SHELL_PLUGINS_DIR/fuse-agents/fuse-agents.plugin.sh"
 fi
 
 # Check for gum (optional dependency)
@@ -117,7 +117,7 @@ log_info "Installation complete!"
 echo ""
 echo "Next steps:"
 echo "1. Restart your terminal or run: source $CONFIG_FILE"
-echo "2. Test with: consolidate-agents --help (in a directory with AI files)"
+echo "2. Test with: fuse-agents --help (in a directory with AI files)"
 echo ""
-echo "The plugin will automatically detect and consolidate CLAUDE.md and GEMINI.md files."
+echo "The plugin will automatically detect and fuse CLAUDE.md and GEMINI.md files."
 echo "Compatible with both Bash and Zsh shells."

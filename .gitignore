@@ -23,5 +23,5 @@ Thumbs.db
 .zcompdump*
 
 # Test directories
-/tmp/test-consolidate/
+/tmp/test-fuse/
 test-dir/

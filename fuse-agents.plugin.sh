@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Consolidate Agents Plugin
+# Fuse Agents Plugin
 # Compatible with both Bash and Zsh
-# Automatically consolidates AI assistant files (CLAUDE.md, GEMINI.md) into AGENTS.md
+# Automatically fuses AI assistant files (CLAUDE.md, GEMINI.md) into AGENTS.md
 
 # =============================================================================
 # SHELL DETECTION AND SETUP
@@ -201,8 +201,8 @@ _handle_ai_file() {
     return 0
 }
 
-# Main function to consolidate AI assistant files
-_consolidate-agents() {
+# Main function to fuse AI assistant files
+_fuse-agents() {
     local target_dir="${1:-.}"
     
     if [[ ! -d "$target_dir" ]]; then
@@ -352,8 +352,13 @@ _consolidate-agents() {
 # AUTO-DETECTION FUNCTIONS
 # =============================================================================
 
-# Auto-detection and auto-consolidation function
-_consolidate_auto_detect() {
+# Auto-detection and auto-fusing function
+_fuse_auto_detect() {
+    # Check if auto-fusing is disabled
+    if [[ -n "$FUSE_AGENTS_AUTO" && "$FUSE_AGENTS_AUTO" == "false" ]]; then
+        return
+    fi
+
     # Only run if we're in an interactive shell
     if [[ "$SHELL_TYPE" == "bash" ]]; then
         [[ $- == *i* ]] || return
@@ -362,7 +367,7 @@ _consolidate_auto_detect() {
     fi
     
     # Prevent recursive calls
-    if [[ -n "$_CONSOLIDATE_AGENTS_RUNNING" ]]; then
+    if [[ -n "$_FUSE_AGENTS_RUNNING" ]]; then
         return
     fi
     
@@ -374,21 +379,21 @@ _consolidate_auto_detect() {
     fi
     
     # Skip GEMINI.md auto-detection since it can read AGENTS.md directly
-    # No need to auto-consolidate GEMINI.md symlinks
+    # No need to auto-fuse GEMINI.md symlinks
     
     if [[ ${#detected_files[@]} -gt 0 ]]; then
         local files_list=$(array_join ", " "${detected_files[@]}")
         log_info "Detected ${files_list} (regular file(s))"
-        log_info "Auto-consolidating using merge strategy..."
+        log_info "Auto-fusing using merge strategy..."
         
         # Set flag to prevent recursive calls
-        export _CONSOLIDATE_AGENTS_RUNNING=1
+        export _FUSE_AGENTS_RUNNING=1
         
-        # Auto-consolidate using merge strategy
-        _consolidate-agents "."
+        # Auto-fuse using merge strategy
+        _fuse-agents "."
         
         # Clear flag
-        unset _CONSOLIDATE_AGENTS_RUNNING
+        unset _FUSE_AGENTS_RUNNING
     fi
 }
 
@@ -397,28 +402,28 @@ _consolidate_auto_detect() {
 # =============================================================================
 
 # Main command
-consolidate-agents() {
+fuse-agents() {
     case "${1:-}" in
         -h|--help|help)
             cat << 'EOF'
-Consolidate Agents - AI Assistant File Management
+Fuse Agents - AI Assistant File Management
 
 USAGE:
-    consolidate-agents [directory]     # Consolidate files in directory (default: current)
-    consolidate-agents-auto            # Auto-detect and consolidate current directory
-    consolidate-agents-recursive [dir] # Recursively consolidate all directories with AI files
+    fuse-agents [directory]     # Fuse files in directory (default: current)
+    fuse-agents-auto            # Auto-detect and fuse current directory
+    fuse-agents-recursive [dir] # Recursively fuse all directories with AI files
 
 DESCRIPTION:
-    Automatically consolidates CLAUDE.md and GEMINI.md files into AGENTS.md
+    Automatically fuses CLAUDE.md and GEMINI.md files into AGENTS.md
     with symlink management and smart merging. GEMINI.md is not symlinked
     since GEMINI can read AGENTS.md directly. If GEMINI.md doesn't exist,
     no symlink will be created for it.
 
 EXAMPLES:
-    consolidate-agents                 # Process current directory
-    consolidate-agents ~/project       # Process specific directory
-    consolidate-agents-auto            # Auto-detect and process current directory
-    consolidate-agents-recursive ~/dev # Process all projects in dev directory
+    fuse-agents                 # Process current directory
+    fuse-agents ~/project       # Process specific directory
+    fuse-agents-auto            # Auto-detect and process current directory
+    fuse-agents-recursive ~/dev # Process all projects in dev directory
 
 FILES:
     CLAUDE.md  → AGENTS.md (symlink)
@@ -430,20 +435,20 @@ OPTIONS:
 EOF
             ;;
         *)
-            _consolidate-agents "$@"
+            _fuse-agents "$@"
             ;;
     esac
 }
 
 # Auto-detect command
-consolidate-agents-auto() {
+fuse-agents-auto() {
     if [[ -f "AGENTS.md" || -f "CLAUDE.md" || -f "GEMINI.md" ]]; then
-        _consolidate-agents "."
+        _fuse-agents "."
     fi
 }
 
 # Recursive command
-consolidate-agents-recursive() {
+fuse-agents-recursive() {
     local base_dir="${1:-.}"
     local found=0
     
@@ -452,7 +457,7 @@ consolidate-agents-recursive() {
     # Find directories with any of the target files
     while IFS= read -r -d '' dir; do
         if [[ -n "$dir" ]]; then
-            _consolidate-agents "$dir"
+            _fuse-agents "$dir"
             ((found++))
         fi
     done < <(find "$base_dir" \( -name "AGENTS.md" -o -name "CLAUDE.md" -o -name "GEMINI.md" \) -type f -printf "%h\0" 2>/dev/null | sort -uz 2>/dev/null)
@@ -473,16 +478,16 @@ _setup_shell_hooks() {
     if [[ "$SHELL_TYPE" == "zsh" ]]; then
         # Zsh: use chpwd hook
         if command -v add-zsh-hook >/dev/null 2>&1; then
-            add-zsh-hook chpwd _consolidate_auto_detect
+            add-zsh-hook chpwd _fuse_auto_detect
         fi
     elif [[ "$SHELL_TYPE" == "bash" ]]; then
         # Bash: use PROMPT_COMMAND
         if [[ -z "$PROMPT_COMMAND" ]]; then
-            PROMPT_COMMAND="_consolidate_auto_detect"
+            PROMPT_COMMAND="_fuse_auto_detect"
         else
             # Append to existing PROMPT_COMMAND
-            if [[ "$PROMPT_COMMAND" != *"_consolidate_auto_detect"* ]]; then
-                PROMPT_COMMAND="$PROMPT_COMMAND; _consolidate_auto_detect"
+            if [[ "$PROMPT_COMMAND" != *"_fuse_auto_detect"* ]]; then
+                PROMPT_COMMAND="$PROMPT_COMMAND; _fuse_auto_detect"
             fi
         fi
     fi
@@ -496,14 +501,14 @@ _setup_shell_hooks() {
 _setup_shell_hooks
 
 # Run on initial shell startup
-_consolidate_auto_detect
+_fuse_auto_detect
 
 # Export functions for use in subshells (only in Bash)
 if [[ "$SHELL_TYPE" == "bash" ]]; then
-    export -f _consolidate-agents 2>/dev/null || true
+    export -f _fuse-agents 2>/dev/null || true
     export -f _handle_ai_file 2>/dev/null || true
-    export -f _consolidate_auto_detect 2>/dev/null || true
-    export -f consolidate-agents 2>/dev/null || true
-    export -f consolidate-agents-auto 2>/dev/null || true
-    export -f consolidate-agents-recursive 2>/dev/null || true
+    export -f _fuse_auto_detect 2>/dev/null || true
+    export -f fuse-agents 2>/dev/null || true
+    export -f fuse-agents-auto 2>/dev/null || true
+    export -f fuse-agents-recursive 2>/dev/null || true
 fi

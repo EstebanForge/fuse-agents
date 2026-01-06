@@ -1,11 +1,11 @@
-# Consolidate Agents Plugin
+# Fuse Agents Plugin
 
-A cross-shell plugin (Bash & Zsh) that automatically consolidates AI assistant configuration files (CLAUDE.md, GEMINI.md) into a unified AGENTS.md file with intelligent symlink management.
+A cross-shell plugin (Bash & Zsh) that automatically fuses AI assistant configuration files (CLAUDE.md, GEMINI.md) into a unified AGENTS.md file with intelligent symlink management.
 
 ## Features
 
 - 🔍 **Auto-detection**: Detects CLAUDE.md and GEMINI.md files when you `cd` into directories
-- 🔄 **Auto-consolidation**: Automatically merges files using merge strategy (no prompts)
+- 🔄 **Auto-fusing**: Automatically merges files using merge strategy (no prompts)
 - 🔗 **Intelligent Symlink Management**: Creates CLAUDE.md → AGENTS.md symlinks; GEMINI.md is merged/renamed since it can read AGENTS.md directly; no GEMINI.md symlink is created if the file doesn't exist
 - 📦 **Smart Merging**: Combines content from multiple AI assistant files
 - 🎯 **Zero Configuration**: Works out of the box, no setup required
@@ -16,13 +16,13 @@ A cross-shell plugin (Bash & Zsh) that automatically consolidates AI assistant c
 
 ```bash
 # For Zsh users:
-git clone https://github.com/EstebanForge/consolidate-agents.git ~/.zsh/plugins/consolidate-agents
-echo 'source ~/.zsh/plugins/consolidate-agents/consolidate-agents.plugin.sh' >> ~/.zshrc
+git clone https://github.com/EstebanForge/fuse-agents.git ~/.zsh/plugins/fuse-agents
+echo 'source ~/.zsh/plugins/fuse-agents/fuse-agents.plugin.sh' >> ~/.zshrc
 source ~/.zshrc
 
 # For Bash users:
-git clone https://github.com/EstebanForge/consolidate-agents.git ~/.bash/plugins/consolidate-agents
-echo 'source ~/.bash/plugins/consolidate-agents/consolidate-agents.plugin.sh' >> ~/.bashrc
+git clone https://github.com/EstebanForge/fuse-agents.git ~/.bash/plugins/fuse-agents
+echo 'source ~/.bash/plugins/fuse-agents/fuse-agents.plugin.sh' >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -30,17 +30,17 @@ source ~/.bashrc
 
 ```bash
 # For Zsh users:
-mkdir -p ~/.zsh/plugins/consolidate-agents
-curl -o ~/.zsh/plugins/consolidate-agents/consolidate-agents.plugin.sh \
-  https://raw.githubusercontent.com/EstebanForge/consolidate-agents/main/consolidate-agents.plugin.sh
-echo 'source ~/.zsh/plugins/consolidate-agents/consolidate-agents.plugin.sh' >> ~/.zshrc
+mkdir -p ~/.zsh/plugins/fuse-agents
+curl -o ~/.zsh/plugins/fuse-agents/fuse-agents.plugin.sh \
+  https://raw.githubusercontent.com/EstebanForge/fuse-agents/main/fuse-agents.plugin.sh
+echo 'source ~/.zsh/plugins/fuse-agents/fuse-agents.plugin.sh' >> ~/.zshrc
 source ~/.zshrc
 
 # For Bash users:
-mkdir -p ~/.bash/plugins/consolidate-agents
-curl -o ~/.bash/plugins/consolidate-agents/consolidate-agents.plugin.sh \
-  https://raw.githubusercontent.com/EstebanForge/consolidate-agents/main/consolidate-agents.plugin.sh
-echo 'source ~/.bash/plugins/consolidate-agents/consolidate-agents.plugin.sh' >> ~/.bashrc
+mkdir -p ~/.bash/plugins/fuse-agents
+curl -o ~/.bash/plugins/fuse-agents/fuse-agents.plugin.sh \
+  https://raw.githubusercontent.com/EstebanForge/fuse-agents/main/fuse-agents.plugin.sh
+echo 'source ~/.bash/plugins/fuse-agents/fuse-agents.plugin.sh' >> ~/.bashrc
 source ~/.bashrc
 ```
 
@@ -48,7 +48,7 @@ source ~/.bashrc
 
 ```bash
 # Run the installer
-curl -fsSL https://raw.githubusercontent.com/EstebanForge/consolidate-agents/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/EstebanForge/fuse-agents/main/install.sh | bash
 ```
 
 ## Updating
@@ -59,7 +59,7 @@ To update the plugin to the latest version:
 
 ```bash
 # Navigate to your plugin directory
-cd ~/.zsh/plugins/consolidate-agents  # or ~/.bash/plugins/consolidate-agents
+cd ~/.zsh/plugins/fuse-agents  # or ~/.bash/plugins/fuse-agents
 
 # Pull latest changes
 git pull
@@ -75,15 +75,15 @@ source ~/.zshrc  # or source ~/.bashrc
 
 ```bash
 # Simply re-run the installer
-curl -fsSL https://raw.githubusercontent.com/EstebanForge/consolidate-agents/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/EstebanForge/fuse-agents/main/install.sh | bash
 
 # Restart your terminal
 ```
 
-**Note**: The installer is update-safe and will:
-- Overwrite the old plugin files with new versions
+**Note**: The installer safely handles updates and will:
+- Overwrite old plugin files with the latest versions
 - Preserve your existing shell configuration
-- Not create duplicate sourcing lines in your config files
+- Prevent the creation of duplicate sourcing lines in your config files
 
 ## Usage
 
@@ -94,7 +94,7 @@ The plugin works automatically when you change directories:
 ```bash
 cd ~/project-with-claude-md
 # 🔍 Detected CLAUDE.md (regular file(s))
-# 🔄 Auto-consolidating using merge strategy...
+# 🔄 Auto-fusing using merge strategy...
 # ✅ Created CLAUDE.md -> AGENTS.md symlink
 # ✅ Processed 1 AI assistant file(s)
 ```
@@ -102,17 +102,17 @@ cd ~/project-with-claude-md
 ### Manual Commands
 
 ```bash
-# Consolidate current directory
-consolidate-agents
+# Fuse current directory
+fuse-agents
 
-# Consolidate specific directories
-consolidate-agents ~/project1 ~/project2
+# Fuse specific directories
+fuse-agents ~/project1 ~/project2
 
-# Auto-detect and consolidate current directory
-consolidate-agents-auto
+# Auto-detect and fuse current directory
+fuse-agents-auto
 
-# Recursively consolidate all directories with AI files
-consolidate-agents-recursive ~/dev-projects
+# Recursively fuse all directories with AI files
+fuse-agents-recursive ~/dev-projects
 ```
 
 ## How It Works
@@ -121,7 +121,7 @@ consolidate-agents-recursive ~/dev-projects
    - `CLAUDE.md` (regular file, not symlink)
    - `GEMINI.md` (regular file, not symlink, only if AGENTS.md doesn't exist)
 
-2. **Consolidation**: If files are detected:
+2. **Fusing**: If files are detected:
    - Creates merged `AGENTS.md` with content from all AI files
    - Backs up original files with timestamps
    - Creates symlinks: `CLAUDE.md → AGENTS.md`
@@ -165,8 +165,8 @@ project/
 While the plugin works automatically, you can configure behavior:
 
 ```bash
-# Disable auto-consolidation (manual only)
-unset CONSOLIDATE_AGENTS_AUTO
+# Disable auto-fusing (manual only)
+export FUSE_AGENTS_AUTO=false
 
 # The plugin uses these files:
 # - CLAUDE.md
@@ -201,21 +201,21 @@ If `gum` is not available, the plugin falls back to basic terminal prompts.
 ### Plugin Not Loading
 
 1. Ensure the plugin file is sourced in `~/.zshrc`
-2. Check file permissions: `chmod 644 consolidate-agents.plugin.zsh`
+2. Check file permissions: `chmod 644 fuse-agents.plugin.zsh`
 3. Restart your terminal or run `source ~/.zshrc`
 
 ### Infinite Loop
 
 If you encounter an infinite loop (rare):
 1. Press `Ctrl+C` to break
-2. Run: `unset _CONSOLIDATE_AGENTS_RUNNING`
+2. Run: `unset _FUSE_AGENTS_RUNNING`
 3. Start a new terminal session
 
 ### Files Not Being Detected
 
 1. Ensure files are regular files (not symlinks): `ls -la CLAUDE.md GEMINI.md`
 2. Check you're in an interactive Zsh session: `echo $- | grep i`
-3. Verify the plugin is loaded: `type _consolidate-agents`
+3. Verify the plugin is loaded: `type _fuse-agents`
 
 ## License
 
@@ -223,8 +223,8 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Support
 
-- 🐛 Report issues: [GitHub Issues](https://github.com/EstebanForge/consolidate-agents/issues)
-- 💬 Discussions: [GitHub Discussions](https://github.com/EstebanForge/consolidate-agents/discussions)
+- 🐛 Report issues: [GitHub Issues](https://github.com/EstebanForge/fuse-agents/issues)
+- 💬 Discussions: [GitHub Discussions](https://github.com/EstebanForge/fuse-agents/discussions)
 
 ---
 
