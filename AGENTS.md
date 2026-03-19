@@ -18,10 +18,10 @@ The plugin detects the current shell (Bash/Zsh/unknown) and adapts behavior:
 
 ### Critical Design Decisions
 - **CLAUDE.md**: Always symlinked to AGENTS.md (Claude requires symlink)
-- **GEMINI.md**: Never symlinked (Gemini can read AGENTS.md directly)
-- **Auto-detection**: Only triggers for CLAUDE.md, not GEMINI.md files
+- **GEMINI.md**: Always symlinked to AGENTS.md (same as CLAUDE.md)
+- **Auto-detection**: Triggers for both CLAUDE.md and GEMINI.md files
 - **Merge Strategy**: Creates timestamped backups and structured merges
-- **Conditional Symlinks**: Symlinks are only created for files that existed originally; if GEMINI.md doesn't exist, no symlink is created
+- **Conditional Symlinks**: Symlinks are only created for files that existed originally
 
 ## Common Development Tasks
 
@@ -120,11 +120,10 @@ PROMPT_COMMAND="$PROMPT_COMMAND; _fuse_auto_detect"
 
 When testing fusing, expect these behaviors:
 - CLAUDE.md becomes a symlink pointing to AGENTS.md
-- GEMINI.md is merged into AGENTS.md (no symlink created)
-- If GEMINI.md doesn't exist, no symlink is created for it (GEMINI can read AGENTS.md directly)
+- GEMINI.md becomes a symlink pointing to AGENTS.md
 - Original files are backed up with timestamps
 - Merge structure includes clear section headers
-- Auto-detection only triggers for CLAUDE.md files
+- Auto-detection triggers for both CLAUDE.md and GEMINI.md files
 
 ## Development Notes
 

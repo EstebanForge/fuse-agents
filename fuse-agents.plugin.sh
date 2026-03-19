@@ -231,112 +231,10 @@ _fuse-agents() {
         fi
     fi
     
-    # Handle GEMINI.md - skip symlinking since GEMINI can read AGENTS.md directly
-    if [[ -f "GEMINI.md" && ! -f "AGENTS.md" ]]; then
-        # Only process GEMINI.md if AGENTS.md doesn't exist
-        log_info "Renaming GEMINI.md to AGENTS.md (GEMINI can read AGENTS.md directly)..."
-        mv "GEMINI.md" "AGENTS.md"
-        ((processed++))
-    elif [[ -f "GEMINI.md" && -f "AGENTS.md" ]]; then
-        # Both files exist - handle the conflict
-        if command -v gum >/dev/null 2>&1; then
-            local choice=$(gum choose \
-                "Keep AGENTS.md (remove GEMINI.md)" \
-                "Keep GEMINI.md, replace AGENTS.md" \
-                "Merge both files into AGENTS.md" \
-                "Skip (resolve manually)" \
-                --header="⚠️  Both GEMINI.md and AGENTS.md exist - GEMINI can read AGENTS.md directly" \
-                --selected="Keep AGENTS.md (remove GEMINI.md)")
-
-            case "$choice" in
-                "Keep AGENTS.md (remove GEMINI.md)")
-                    local backup="GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
-                    log_info "Backing up GEMINI.md to '$backup' (GEMINI can read AGENTS.md directly)"
-                    mv "GEMINI.md" "$backup"
-                    ((processed++))
-                    ;;
-                "Keep GEMINI.md, replace AGENTS.md")
-                    local backup="AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
-                    log_info "Backing up AGENTS.md to '$backup'"
-                    mv "AGENTS.md" "$backup"
-                    mv "GEMINI.md" "AGENTS.md"
-                    ((processed++))
-                    ;;
-                "Merge both files into AGENTS.md")
-                    log_info "Merging files..."
-                    local temp_merged="AGENTS.md.merged.$(date +%Y%m%d_%H%M%S)"
-                    {
-                        echo "# Merged from GEMINI.md and AGENTS.md - $(date)"
-                        echo ""
-                        echo "## From AGENTS.md:"
-                        cat "AGENTS.md"
-                        echo ""
-                        echo "## From GEMINI.md:"
-                        cat "GEMINI.md"
-                    } > "$temp_merged"
-
-                    local backup_agents="AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
-                    local backup_gemini="GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
-                    mv "AGENTS.md" "$backup_agents"
-                    mv "GEMINI.md" "$backup_gemini"
-                    mv "$temp_merged" "AGENTS.md"
-                    log_info "Created merged AGENTS.md, originals backed up"
-                    ((processed++))
-                    ;;
-                "Skip (resolve manually)"|*)
-                    log_warn "Skipping GEMINI.md - please resolve manually"
-                    ;;
-            esac
-        else
-            # Fallback to basic prompt if gum not available
-            log_warn "Both GEMINI.md and AGENTS.md exist - GEMINI can read AGENTS.md directly"
-            echo "Choose which file to keep as AGENTS.md:"
-            echo "  1) Keep AGENTS.md (remove GEMINI.md) [default]"
-            echo "  2) Keep GEMINI.md (replace AGENTS.md)"
-            echo "  3) Merge both files into AGENTS.md"
-            echo "  4) Skip (resolve manually)"
-            echo -n "Choice [1/2/3/4, default=1]: "
-
-            read -r choice
-            case "${choice:-1}" in
-                1)
-                    local backup="GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
-                    log_info "Backing up GEMINI.md to '$backup' (GEMINI can read AGENTS.md directly)"
-                    mv "GEMINI.md" "$backup"
-                    ((processed++))
-                    ;;
-                2)
-                    local backup="AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
-                    log_info "Backing up AGENTS.md to '$backup'"
-                    mv "AGENTS.md" "$backup"
-                    mv "GEMINI.md" "AGENTS.md"
-                    ((processed++))
-                    ;;
-                3)
-                    log_info "Merging files..."
-                    local temp_merged="AGENTS.md.merged.$(date +%Y%m%d_%H%M%S)"
-                    {
-                        echo "# Merged from GEMINI.md and AGENTS.md - $(date)"
-                        echo ""
-                        echo "## From AGENTS.md:"
-                        cat "AGENTS.md"
-                        echo ""
-                        echo "## From GEMINI.md:"
-                        cat "GEMINI.md"
-                    } > "$temp_merged"
-
-                    local backup_agents="AGENTS.md.backup.$(date +%Y%m%d_%H%M%S)"
-                    local backup_gemini="GEMINI.md.backup.$(date +%Y%m%d_%H%M%S)"
-                    mv "AGENTS.md" "$backup_agents"
-                    mv "GEMINI.md" "$backup_gemini"
-                    mv "$temp_merged" "AGENTS.md"
-                    log_info "Created merged AGENTS.md, originals backed up"
-                    ((processed++))
-                    ;;
-                4|*)
-                    log_warn "Skipping GEMINI.md - please resolve manually"
-                    ;;
-            esac
+    # Handle GEMINI.md - symlink to AGENTS.md like CLAUDE.md
+    if [[ -f "GEMINI.md" || -f "AGENTS.md" ]]; then
+        if _handle_ai_file "GEMINI.md" "GEMINI" "true"; then
+            ((processed++))
         fi
     fi
     
@@ -377,9 +275,11 @@ _fuse_auto_detect() {
     if [[ -f "CLAUDE.md" && ! -L "CLAUDE.md" ]]; then
         detected_files+=("CLAUDE.md")
     fi
-    
-    # Skip GEMINI.md auto-detection since it can read AGENTS.md directly
-    # No need to auto-fuse GEMINI.md symlinks
+
+    # Also trigger on GEMINI.md files
+    if [[ -f "GEMINI.md" && ! -L "GEMINI.md" ]]; then
+        detected_files+=("GEMINI.md")
+    fi
     
     if [[ ${#detected_files[@]} -gt 0 ]]; then
         local files_list=$(array_join ", " "${detected_files[@]}")
@@ -415,9 +315,8 @@ USAGE:
 
 DESCRIPTION:
     Automatically fuses CLAUDE.md and GEMINI.md files into AGENTS.md
-    with symlink management and smart merging. GEMINI.md is not symlinked
-    since GEMINI can read AGENTS.md directly. If GEMINI.md doesn't exist,
-    no symlink will be created for it.
+    with symlink management and smart merging. Both CLAUDE.md and GEMINI.md
+    are symlinked to AGENTS.md.
 
 EXAMPLES:
     fuse-agents                 # Process current directory
@@ -427,7 +326,7 @@ EXAMPLES:
 
 FILES:
     CLAUDE.md  → AGENTS.md (symlink)
-    GEMINI.md  → AGENTS.md (merged/renamed, no symlink)
+    GEMINI.md  → AGENTS.md (symlink)
     AGENTS.md  (merged content)
 
 OPTIONS:
