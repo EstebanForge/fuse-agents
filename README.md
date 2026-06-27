@@ -48,6 +48,7 @@ source ~/.bashrc
 
 ```bash
 # Run the installer
+# Creates the rc file if missing (works on fresh machines)
 curl -fsSL https://raw.githubusercontent.com/EstebanForge/fuse-agents/main/install.sh | bash
 ```
 
@@ -81,9 +82,36 @@ curl -fsSL https://raw.githubusercontent.com/EstebanForge/fuse-agents/main/insta
 ```
 
 **Note**: The installer safely handles updates and will:
+- Create the rc file (`~/.zshrc` / `~/.bashrc`) if it does not exist yet
 - Overwrite old plugin files with the latest versions
 - Preserve your existing shell configuration
 - Prevent the creation of duplicate sourcing lines in your config files
+
+## Uninstalling
+
+Remove the plugin and reverse all `install.sh` changes. The uninstaller strips only
+the `# Load Fuse Agents plugin` source block from your rc file and deletes the plugin
+directory; everything else in your shell config is preserved.
+
+### Option 1: Quick Uninstall Script
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/EstebanForge/fuse-agents/main/uninstall.sh | bash
+```
+
+### Option 2: From a Local Clone
+
+```bash
+./uninstall.sh
+```
+
+**What it does**:
+- Removes the `source` block from `~/.zshrc` or `~/.bashrc` (idempotent)
+- Deletes `~/.zsh/plugins/fuse-agents` or `~/.bash/plugins/fuse-agents`
+- Removes the parent `plugins/` dir only if it ends up empty
+- Safe no-op if the plugin was never installed
+
+After uninstalling, restart your shell to clear the loaded plugin functions.
 
 ## Usage
 
@@ -228,4 +256,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-**Made with ❤️ for developers. And with 💩 for A. for not adopting standards **
+**Made with ❤️ for developers. And with 💩 for A & G. for not adopting standards **
