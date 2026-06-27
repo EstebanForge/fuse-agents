@@ -89,7 +89,7 @@ if [[ -f "$CONFIG_FILE" ]]; then
         log_warn "Plugin already referenced in $CONFIG_FILE"
     else
         log_step "Adding plugin to $CONFIG_FILE"
-        
+
         # Add plugin loading code
         cat >> "$CONFIG_FILE" << EOF
 
@@ -101,9 +101,18 @@ EOF
         log_info "Added plugin loading to $CONFIG_FILE"
     fi
 else
-    log_warn "$CONFIG_FILE not found. You'll need to manually add the plugin to your shell configuration."
-    echo "Add this line to your shell config:"
-    echo "source $SHELL_PLUGINS_DIR/fuse-agents/fuse-agents.plugin.sh"
+    # Fresh machines have no rc file yet. Create one so the plugin actually loads
+    # after the first shell restart; never silently skip wiring the source line.
+    log_step "Creating $CONFIG_FILE (did not exist)"
+    touch "$CONFIG_FILE"
+    cat >> "$CONFIG_FILE" << EOF
+
+# Load Fuse Agents plugin
+if [[ -f $SHELL_PLUGINS_DIR/fuse-agents/fuse-agents.plugin.sh ]]; then
+    source $SHELL_PLUGINS_DIR/fuse-agents/fuse-agents.plugin.sh
+fi
+EOF
+    log_info "Created $CONFIG_FILE and added plugin loading"
 fi
 
 # Check for gum (optional dependency)
