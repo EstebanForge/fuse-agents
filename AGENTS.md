@@ -43,6 +43,16 @@ echo "# Gemini proj2" > ~/test-projects/proj2/GEMINI.md
 fuse-agents-recursive ~/test-projects
 ```
 
+### Quick Commands (`just` recipes)
+
+```bash
+just            # List all available targets
+just check      # Validate syntax and run shellcheck
+just install    # Test install script
+just uninstall  # Test uninstall script
+just ci         # Run local CI checks
+```
+
 ### Installation Testing
 
 ```bash
